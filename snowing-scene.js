@@ -2,12 +2,7 @@
 	function SnowingScene(config) {
 		var that = this;
 
-		that.primaryCanvas = config.canvas;
-		that.primaryContext = that.primaryCanvas.getContext("2d");
-
-		that.canvas = document.createElement("canvas");
-		that.canvas.width = WIDTH;
-		that.canvas.height = HEIGHT;
+		that.canvas = config.canvas;
 		that.context = that.canvas.getContext("2d");
 
 		that.background = that._getImage("images/background.png");
@@ -23,17 +18,12 @@
 		render: function() {
 			var that = this;
 
+			requestAnimationFrame(that.render.bind(that));
+
 			that._update();
 
 			that.context.clearRect(0, 0, canvas.width, canvas.height);
 			that._render();
-
-			that.primaryContext.clearRect(0, 0, WIDTH, HEIGHT);
-			that.primaryContext.drawImage(that.canvas, 0, 0);
-
-			setTimeout(function() {
-				that.render();
-			}, UPDATE_TIMEOUT);
 		},
 
 		onSnowflakeFallen: function(snowflake) {
@@ -111,8 +101,7 @@
 	WinterNamespace.SnowingScene = SnowingScene;
 
 	const
-		UPDATE_TIMEOUT = 1000 / 60,
 		WIDTH = 600,
 		HEIGHT = 600,
-		SNOWFLAKES_COUNT = 750
+		SNOWFLAKES_COUNT = 1000
 })();

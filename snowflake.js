@@ -47,7 +47,7 @@
 			var that = this;
 
 			return that.position.x > 0 && that.position.x < WIDTH &&
-					that.position.y > 0  && that.position.y < HEIGHT - 150;
+					that.position.y > 0  && that.position.y < BOTTOM;
 		},
 
 		update: function () {
@@ -66,7 +66,7 @@
 				that.alreadyVisible = true;
 			}
 
-			if (that.position.y > HEIGHT || that.radius > (MAX_RADIUS * 2) || that.radius <= 0) {
+			if (that.position.y > BOTTOM || that.radius > (MAX_RADIUS * 2) || that.radius <= 0) {
 				that.isFallen = true;
 				that.scene.onSnowflakeFallen(that);
 			}
@@ -98,5 +98,6 @@
 	const
 		WIDTH = 600,
 		HEIGHT = 600,
+		BOTTOM = HEIGHT - 150,
 		MAX_RADIUS = 6;
 })();
