@@ -1,0 +1,19 @@
+<html>
+	<body>
+		<canvas id="scene" width="600" height="600"></canvas>
+	</body>
+
+	<script type="text/javascript" src="snowing-scene.js"></script>
+	<script type="text/javascript" src="snowflake.js"></script>
+
+	<script type="text/javascript">
+		var canvas = document.getElementById("scene"),
+			snowingScene = new WinterNamespace.SnowingScene({
+				canvas: canvas
+			});
+
+		snowingScene.render();
+	</script>
+</html>
+
+<!--http://demos.seb.ly/JSSnowNew/snow3d.html-->
