@@ -1,101 +1,90 @@
 (function() {
-	function SnowingScene(config) {
-		var that = this;
+	class SnowingScene {
+		constructor(config) {
+			this.canvas = config.canvas;
+			this.context = this.canvas.getContext("2d");
 
-		that.canvas = config.canvas;
-		that.context = that.canvas.getContext("2d");
+			this.background = this._getImage("images/background.png");
 
-		that.background = that._getImage("images/background.png");
+			this.oldTime = new Date();
+			this.framesCounter = 0;
+			this.fps = 0;
 
-		that.oldTime = new Date();
-		that.framesCounter = 0;
-		that.fps = 0;
+			this._generateSnowflakes();
+		}
 
-		that._generateSnowflakes();
-	}
+		render() {
+			requestAnimationFrame(this.render.bind(this));
 
-	SnowingScene.prototype = {
-		render: function() {
-			var that = this;
+			this._update();
 
-			requestAnimationFrame(that.render.bind(that));
+			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			this._render();
+		}
 
-			that._update();
-
-			that.context.clearRect(0, 0, canvas.width, canvas.height);
-			that._render();
-		},
-
-		onSnowflakeFallen: function(snowflake) {
+		onSnowflakeFallen(snowflake) {
 			snowflake.reset();
-		},
+		}
 
-		_generateSnowflakes: function() {
-			var that = this;
+		_generateSnowflakes() {
+			this.snowflakes = [];
 
-			that.snowflakes = [];
+			for (let i = 0; i < SNOWFLAKES_COUNT; i++) {
+				let snowflake = new WinterNamespace.Snowflake({ context: this.context, scene: this });
 
-			for (var i = 0; i < SNOWFLAKES_COUNT; i++) {
-				var snowflake = new WinterNamespace.Snowflake({context: that.context, scene: this});
-
-				that.snowflakes.push(snowflake);
+				this.snowflakes.push(snowflake);
 			}
-		},
+		}
 
-		_update: function() {
-			var that = this;
-
-			for (var i = 0; i < that.snowflakes.length; i++) {
-				that.snowflakes[i].update();
+		_update() {
+			for (let i = 0; i < this.snowflakes.length; i++) {
+				this.snowflakes[i].update();
 			}
-		},
+		}
 
-		_render: function() {
-			var that = this,
-				ctx = that.context;
+		_render() {
+			let ctx = this.context;
 
-			that._renderBackground();
+			this._renderBackground();
 
-			for (var i = 0; i < that.snowflakes.length; i++) {
-				that.snowflakes[i].render();
+			for (let i = 0; i < this.snowflakes.length; i++) {
+				this.snowflakes[i].render();
 			}
 
-			that._renderFPS();
-		},
+			this._renderFPS();
+		}
 
-		_renderBackground: function() {
-			var that = this,
-				ctx = that.context;
+		_renderBackground() {
+			var ctx = this.context;
 
-			ctx.drawImage(that.background, 0, 0);
-		},
+			ctx.drawImage(this.background, 0, 0);
+		}
 
-		_renderFPS: function() {
-			var that = this,
-				now = new Date(),
-				ctx = that.context,
-				diff = now.getTime() - that.oldTime.getTime();
+		_renderFPS() {
+			var now = new Date(),
+				ctx = this.context,
+				diff = now.getTime() - this.oldTime.getTime();
 
 			if (diff < 1000) {
-				that.framesCounter++;
+				this.framesCounter++;
 			} else {
-				that.fps = that.framesCounter;
-				that.framesCounter = 0;
-				that.oldTime = new Date();
+				this.fps = this.framesCounter;
+				this.framesCounter = 0;
+				this.oldTime = new Date();
 			}
 
 			ctx.font = "14px Arial";
 			ctx.fillStyle = "white";
 			ctx.textAlign = "left";
-			ctx.fillText("fps: " + that.fps, 550, 25);
-		},
+			ctx.fillText("fps: " + this.fps, 550, 25);
+		}
 
-		_getImage: function(filename) {
-			var image = new Image();
+		_getImage(filename) {
+			let image = new Image();
 			image.src = filename;
 			return image;
-		},
-	};
+		}
+	}
 
 	window.WinterNamespace = window.WinterNamespace || {};
 	WinterNamespace.SnowingScene = SnowingScene;

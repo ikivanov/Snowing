@@ -1,96 +1,87 @@
 (function() {
-	function Snowflake(config) {
-		var that = this;
+	class Snowflake {
+		constructor(config) {
+			this.context = config.context;
+			this.scene = config.scene;
 
-		that.context = config.context;
-		that.scene = config.scene;
+			this.speedVector = { x: 0, y: 0	};
+			this.position = { x: 0, y: 0 };
+			this.speedVector = { x: 0, y: 0, z: 0 };
+			this.radius = 0;
+			this.isFallen = false;
 
-		that.speedVector = { x: 0, y: 0	};
-		that.position = { x: 0, y: 0 };
-		that.speedVector = { x: 0, y: 0, z: 0 };
-		that.radius = 0;
-		that.isFallen = false;
+			this.radiusStep = [-0.05, 0.05];
+			this.alreadyVisible = false;
 
-		that.radiusStep = [-0.05, 0.05];
-		that.alreadyVisible = false;
+			this.reset();
+		}
 
-		that.reset();
-	}
+		reset() {
+			this.radius = Math.floor(this.randomRange(2, MAX_RADIUS));
+			this.position.x = Math.floor(this.randomRange(1, WIDTH));
+			this.position.y = -Math.floor(this.randomRange(1, HEIGHT));
+			this.speedVector.x = 0;
+			this.speedVector.y = this.radius / 1.5;
+			this.speedVector.z = 0;
 
-	Snowflake.prototype = {
-		reset: function() {
-			var that = this;
-
-			that.radius = Math.floor(that.randomRange(2, MAX_RADIUS));
-			that.position.x = Math.floor(that.randomRange(1, WIDTH));
-			that.position.y = -Math.floor(that.randomRange(1, HEIGHT));
-			that.speedVector.x = 0;
-			that.speedVector.y = that.radius / 1.5;
-			that.speedVector.z = 0;
-
-			if (that.radius <= 2 && that._shouldMoveInZPlane()) {
-				that.speedVector.z = 0.05;
+			if (this.radius <= 2 && this._shouldMoveInZPlane()) {
+				this.speedVector.z = 0.05;
 			}
 
-			that.isFallen = false;
-			that.alreadyVisible = false;
-		},
+			this.isFallen = false;
+			this.alreadyVisible = false;
+		}
 
-		_shouldMoveInZPlane: function() {
-			var probabilities = [0, 0, 1, 0, 0],
+		_shouldMoveInZPlane() {
+			let probabilities = [0, 0, 1, 0, 0],
 				index = Math.floor(this.randomRange(0, 4));
 
 			return probabilities[index] === 1;
-		},
+		}
 
-		_isVisible: function() {
-			var that = this;
+		_isVisible() {
+			return this.position.x > 0 && this.position.x < WIDTH &&
+					this.position.y > 0  && this.position.y < BOTTOM;
+		}
 
-			return that.position.x > 0 && that.position.x < WIDTH &&
-					that.position.y > 0  && that.position.y < BOTTOM;
-		},
-
-		update: function () {
-			var that = this;
-
-			if (that.isFallen) {
+		update() {
+			if (this.isFallen) {
 				return;
 			}
 
-			that.position.x += that.speedVector.x;
-			that.position.y += that.speedVector.y;
-			that.radius += that.speedVector.z;
-			that.speedVector.y = that.radius / 1.5;
+			this.position.x += this.speedVector.x;
+			this.position.y += this.speedVector.y;
+			this.radius += this.speedVector.z;
+			this.speedVector.y = this.radius / 1.5;
 
-			if (!that.alreadyVisible && that._isVisible()) {
-				that.alreadyVisible = true;
+			if (!this.alreadyVisible && this._isVisible()) {
+				this.alreadyVisible = true;
 			}
 
-			if (that.position.y > BOTTOM || that.radius > (MAX_RADIUS * 2) || that.radius <= 0) {
-				that.isFallen = true;
-				that.scene.onSnowflakeFallen(that);
+			if (this.position.y > BOTTOM || this.radius > (MAX_RADIUS * 2) || this.radius <= 0) {
+				this.isFallen = true;
+				this.scene.onSnowflakeFallen(this);
 			}
-		},
+		}
 
-		render: function() {
-			var that = this,
-				ctx = that.context;
+		render() {
+			let ctx = this.context;
 
-			if (that.isFallen || !that._isVisible()) {
+			if (this.isFallen || !this._isVisible()) {
 				return;
 			}
 
 			ctx.beginPath();
-			ctx.arc(that.position.x, that.position.y, that.radius, 0, 2 * Math.PI, false);
+			ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
 			ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
 			ctx.fill();
-		},
+		}
 
-		randomRange: function(min, max)
+		randomRange(min, max)
 		{
 			return ((Math.random()*(max - min)) + min);
 		}
-	};
+	}
 
 	window.WinterNamespace = window.WinterNamespace || {};
 	WinterNamespace.Snowflake = Snowflake;
